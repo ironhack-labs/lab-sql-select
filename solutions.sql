@@ -23,29 +23,27 @@ JOIN titles t ON ta.title_id = t.title_id
 JOIN publishers p ON t.pub_id = p.pub_id
 GROUP BY a.au_id, p.pub_name;
 
--- Challenge 3: Top 3 best selling authors by total quantity sold
+-- Challenge 3: Top 3 best selling authors by total ytd_sales
 SELECT 
     a.au_id AS "AUTHOR ID",
     a.au_lname AS "LAST NAME",
     a.au_fname AS "FIRST NAME",
-    SUM(s.qty) AS "TOTAL"
+    SUM(t.ytd_sales) AS "TOTAL"
 FROM authors a
 JOIN titleauthor ta ON a.au_id = ta.au_id
 JOIN titles t ON ta.title_id = t.title_id
-JOIN sales s ON t.title_id = s.title_id
-GROUP BY a.au_id
+GROUP BY a.au_id, a.au_lname, a.au_fname
 ORDER BY TOTAL DESC
 LIMIT 3;
 
--- Challenge 4: All authors ranked by total quantity sold
+-- Challenge 4: All authors ranked by total ytd_sales (including 0s)
 SELECT 
     a.au_id AS "AUTHOR ID",
     a.au_lname AS "LAST NAME",
     a.au_fname AS "FIRST NAME",
-    IFNULL(SUM(s.qty), 0) AS "TOTAL"
+    COALESCE(SUM(t.ytd_sales), 0) AS "TOTAL"
 FROM authors a
 LEFT JOIN titleauthor ta ON a.au_id = ta.au_id
 LEFT JOIN titles t ON ta.title_id = t.title_id
-LEFT JOIN sales s ON t.title_id = s.title_id
-GROUP BY a.au_id
+GROUP BY a.au_id, a.au_lname, a.au_fname
 ORDER BY TOTAL DESC;
