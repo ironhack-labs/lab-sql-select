@@ -59,19 +59,15 @@ SELECT
 	authors.au_id AS "AUTHOR ID",
 	authors.au_lname AS "LAST NAME",
 	authors.au_fname AS "FIRST NAME",
-	COUNT(sales.title_id) AS total
-FROM
+	SUM(titles.ytd_sales) AS total
+FROM 
 	authors
-JOIN
+JOIN 
 	titleauthor ON authors.au_id = titleauthor.au_id
-JOIN
+JOIN 
 	titles ON titleauthor.title_id = titles.title_id
-JOIN
-	sales ON titles.title_id = sales.title_id
-GROUP BY
-	authors.au_id,
-    authors.au_lname,
-    authors.au_fname
+GROUP BY 
+	authors.au_id
 ORDER BY
 	total DESC
 LIMIT 3;
@@ -81,15 +77,13 @@ SELECT
 	authors.au_id AS "AUTHOR ID",
 	authors.au_lname AS "LAST NAME",
 	authors.au_fname AS "FIRST NAME",
-	COALESCE(COUNT(sales.title_id), 0) AS total
+	COALESCE(SUM(titles.ytd_sales), 0) AS total
 FROM
 	authors
 LEFT JOIN
 	titleauthor ON authors.au_id = titleauthor.au_id
 LEFT JOIN
 	titles ON titleauthor.title_id = titles.title_id
-LEFT JOIN
-	sales ON titles.title_id = sales.title_id
 GROUP BY
 	authors.au_id,
     authors.au_lname,
