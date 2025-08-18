@@ -1,1 +1,98 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/nicol/Desktop/Ironhack/week5/lab-sql-select/publications.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1188"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="0" parent="0"/><expanded_item id="5" parent="0"/><expanded_item id="7" parent="0"/><expanded_item id="10" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="authors" custom_title="0" dock_id="3" table="4,7:mainauthors"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000003fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000011800ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="solutions.sql" filename="C:/Users/nicol/Desktop/Ironhack/week5/lab-sql-basics/your-code/solutions.sql">-- Reference to file &quot;C:/Users/nicol/Desktop/Ironhack/week5/lab-sql-basics/your-code/solutions.sql&quot; (not supported by this version) --</sql><current_tab id="0"/></tab_sql></sqlb_project>
+-- 1.
+SELECT
+    authors.au_id AS "AUTHOR ID",
+    authors.au_lname AS "LAST NAME",
+    authors.au_fname AS "FIRST NAME",
+    titles.title AS "TITLE",
+    publishers.pub_name AS "PUBLISHER"
+FROM
+    authors
+JOIN
+    titleauthor ON authors.au_id = titleauthor.au_id
+JOIN
+    titles ON titleauthor.title_id = titles.title_id
+JOIN
+    publishers ON titles.pub_id = publishers.pub_id
+ORDER BY
+	authors.au_id ASC , publishers.pub_name DESC;
+	
+-- 2.
+SELECT
+    authors.au_id AS "AUTHOR ID",
+    authors.au_lname AS "LAST NAME",
+    authors.au_fname AS "FIRST NAME",
+    publishers.pub_name AS "PUBLISHER",
+	COUNT(titles.title_id) AS "TITLE COUNT"
+FROM
+    authors
+JOIN
+    titleauthor ON authors.au_id = titleauthor.au_id
+JOIN
+    titles ON titleauthor.title_id = titles.title_id
+JOIN
+    publishers ON titles.pub_id = publishers.pub_id
+GROUP BY
+	authors.au_id, publishers.pub_name
+ORDER BY
+	authors.au_id DESC , publishers.pub_name DESC;
+	
+-- sanity check
+SELECT
+    (SELECT COUNT(*) FROM titleauthor) AS total_titleauthor_count,
+    SUM(T."TITLE COUNT") AS total_titles_from_grouped_query
+FROM
+    (SELECT
+        authors.au_id AS "AUTHOR ID",
+        COUNT(titles.title_id) AS "TITLE COUNT"
+    FROM
+        authors
+    JOIN
+        titleauthor ON authors.au_id = titleauthor.au_id
+    JOIN
+        titles ON titleauthor.title_id = titles.title_id
+    GROUP BY
+        authors.au_id
+    ) AS T;
+	
+-- 3.
+SELECT
+	authors.au_id AS "AUTHOR ID",
+	authors.au_lname AS "LAST NAME",
+	authors.au_fname AS "FIRST NAME",
+	COUNT(sales.title_id) AS total
+FROM
+	authors
+JOIN
+	titleauthor ON authors.au_id = titleauthor.au_id
+JOIN
+	titles ON titleauthor.title_id = titles.title_id
+JOIN
+	sales ON titles.title_id = sales.title_id
+GROUP BY
+	authors.au_id,
+    authors.au_lname,
+    authors.au_fname
+ORDER BY
+	total DESC
+LIMIT 3;
+
+
+SELECT
+	authors.au_id AS "AUTHOR ID",
+	authors.au_lname AS "LAST NAME",
+	authors.au_fname AS "FIRST NAME",
+	COALESCE(COUNT(sales.title_id), 0) AS total
+FROM
+	authors
+LEFT JOIN
+	titleauthor ON authors.au_id = titleauthor.au_id
+LEFT JOIN
+	titles ON titleauthor.title_id = titles.title_id
+LEFT JOIN
+	sales ON titles.title_id = sales.title_id
+GROUP BY
+	authors.au_id,
+    authors.au_lname,
+    authors.au_fname
+ORDER BY
+	total DESC;
