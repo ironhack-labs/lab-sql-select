@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="solution.sql" readonly="0" foreign_keys="0" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="735"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="authors" custom_title="0" dock_id="1" table="4,7:mainauthors"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011300ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">-- Challenge 1 --
+SELECT 
+    a.au_id AS &quot;AUTHOR ID&quot;,
+    a.au_lname AS &quot;LAST NAME&quot;,
+    a.au_fname AS &quot;FIRST NAME&quot;,
+    t.title AS &quot;TITLE&quot;,
+    p.pub_name AS &quot;PUBLISHER&quot;
+FROM 
+    authors a
+JOIN 
+    titleauthor ta ON a.au_id = ta.au_id
+JOIN 
+    titles t ON ta.title_id = t.title_id
+JOIN 
+    publishers p ON t.pub_id = p.pub_id
+ORDER BY 
+    a.au_id, t.title;
+	
+	-- Challenge 2 --
+SELECT
+    a.au_id        AS &quot;AUTHOR ID&quot;,
+    a.au_lname     AS &quot;LAST NAME&quot;,
+    a.au_fname     AS &quot;FIRST NAME&quot;,
+    p.pub_name     AS &quot;PUBLISHER&quot;,
+    COUNT(*)       AS &quot;TITLE COUNT&quot;
+FROM authors a
+JOIN titleauthor ta ON ta.au_id   = a.au_id
+JOIN titles t       ON t.title_id = ta.title_id
+JOIN publishers p   ON p.pub_id   = t.pub_id
+GROUP BY
+    a.au_id, a.au_lname, a.au_fname, p.pub_name
+ORDER BY
+    a.au_id, p.pub_name;
+	
+	-- challenge 3 -- 
+	SELECT
+    a.au_id      AS &quot;AUTHOR ID&quot;,
+    a.au_lname   AS &quot;LAST NAME&quot;,
+    a.au_fname   AS &quot;FIRST NAME&quot;,
+    SUM(s.qty)   AS &quot;TOTAL&quot;
+FROM authors a
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t       ON ta.title_id = t.title_id
+JOIN sales s        ON t.title_id = s.title_id
+GROUP BY
+    a.au_id, a.au_lname, a.au_fname
+ORDER BY
+    TOTAL DESC
+LIMIT 3;
+
+ -- challenge 4 -- 
+ SELECT
+    a.au_id    AS &quot;AUTHOR ID&quot;,
+    a.au_lname AS &quot;LAST NAME&quot;,
+    a.au_fname AS &quot;FIRST NAME&quot;,
+    COALESCE(SUM(s.qty), 0) AS &quot;TOTAL&quot;
+FROM authors a
+LEFT JOIN titleauthor ta ON ta.au_id = a.au_id
+LEFT JOIN titles t       ON t.title_id = ta.title_id
+LEFT JOIN sales s        ON s.title_id = t.title_id
+GROUP BY
+    a.au_id, a.au_lname, a.au_fname
+ORDER BY
+    4 DESC, a.au_lname, a.au_fname;   -- order by TOTAL (desc), then name for ties
+
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
