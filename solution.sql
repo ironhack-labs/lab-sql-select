@@ -33,7 +33,7 @@ FROM titleauthor AS ta
 JOIN authors a ON a.au_id = ta.au_id
 JOIN titles t ON ta.title_id = t.title_id
 JOIN publishers p ON t.pub_id = p.pub_id
-GROUP BY a.au_id, a.au_lname, p.pub_name
+GROUP BY a.au_id, a.au_lname
 ORDER BY "TOTAL" DESC
 LIMIT 3;
 
