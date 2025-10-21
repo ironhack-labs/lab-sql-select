@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Esquema de Base de Datos - Publicaciones</title>
+  <style>
+    :root {
+      --primary: #4CAF50;
+      --primary-dark: #45a049;
+      --secondary: #2196F3;
+      --accent: #FF9800;
+      --danger: #d32f2f;
+      --light: #f9f9f9;
+      --dark: #333;
+      --gray: #ccc;
+      --white: #fff;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light);
+      color: var(--dark);
+      line-height: 1.6;
+      padding: 20px;
+      overflow-x: auto;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      min-height: 1000px;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    h1 {
+      color: var(--dark);
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 1.2rem;
+    }
+    
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .search-box {
+      flex-grow: 1;
+      margin-right: 20px;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid var(--gray);
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    
+    .schema-container {
+      position: relative;
+      min-height: 800px;
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 20px;
+      overflow: auto;
+    }
+    
+    .tables-layout {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .table {
+      background: var(--white);
+      border: 1px solid var(--gray);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .table-header {
+      background-color: var(--primary);
+      color: var(--white);
+      padding: 12px 15px;
+      font-weight: bold;
+    }
+    
+    .table-name {
+      font-size: 1.1rem;
+    }
+    
+    .table-content {
+      max-height: none;
+    }
+    
+    .column {
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    
+    .column:last-child {
+      border-bottom: none;
+    }
+    
+    .pk {
+      font-weight: bold;
+      color: var(--danger);
+    }
+    
+    .fk {
+      color: var(--secondary);
+      font-style: italic;
+    }
+    
+    .column-icon {
+      margin-right: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .relationships-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .relationship-line {
+      stroke: var(--secondary);
+      stroke-width: 2;
+      marker-end: url(#arrowhead);
+    }
+    
+    .relationship-line-dashed {
+      stroke: var(--accent);
+      stroke-width: 2;
+      stroke-dasharray: 5,5;
+      marker-end: url(#arrowhead);
+    }
+    
+    .legend {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .legend h2 {
+      color: var(--dark);
+      margin-bottom: 15px;
+    }
+    
+    .legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+    }
+    
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      border-radius: 3px;
+    }
+    
+    .legend-pk {
+      background-color: var(--danger);
+    }
+    
+    .legend-fk {
+      background-color: var(--secondary);
+    }
+    
+    .legend-relationship {
+      background-color: var(--secondary);
+    }
+    
+    .legend-relationship-dashed {
+      background: repeating-linear-gradient(
+        45deg,
+        var(--accent),
+        var(--accent) 5px,
+        transparent 5px,
+        transparent 10px
+      );
+    }
+    
+    .table-highlight {
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+    }
+    
+    @media (max-width: 1200px) {
+      .tables-layout {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .tables-layout {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .tables-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Esquema de Base de Datos - Publicaciones</h1>
+      <p class="subtitle">Base de datos para gestión de publicaciones, autores, editoriales y ventas</p>
+    </header>
+    
+    <div class="controls">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Buscar tabla o columna...">
+      </div>
+    </div>
+    
+    <div class="schema-container">
+      <svg class="relationships-layer" id="relationships-layer">
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                  refX="10" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#2196F3"/>
+          </marker>
+        </defs>
+        <!-- Las líneas de relación se dibujarán aquí -->
+      </svg>
+      
+      <div class="tables-layout" id="tables-layout">
+        <!-- Tablas se generarán dinámicamente con JavaScript -->
+      </div>
+    </div>
+    
+    <div class="legend">
+      <h2>Leyenda</h2>
+      <div class="legend-items">
+        <div class="legend-item">
+          <div class="legend-color legend-pk"></div>
+          <span>Clave Primaria (PK)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-fk"></div>
+          <span>Clave Foránea (FK)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-relationship"></div>
+          <span>Relación (Uno a Muchos)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-relationship-dashed"></div>
+          <span>Relación (Muchos a Muchos)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Datos de las tablas
+    const tables = [
+      {
+        name: "authors",
+        columns: [
+          { name: "au_id", type: "pk" },
+          { name: "au_lname", type: "regular" },
+          { name: "au_fname", type: "regular" },
+          { name: "phone", type: "regular" },
+          { name: "address", type: "regular" },
+          { name: "city", type: "regular" },
+          { name: "state", type: "regular" },
+          { name: "zip", type: "regular" },
+          { name: "contract", type: "regular" }
+        ],
+        position: { row: 1, col: 1 }
+      },
+      {
+        name: "publishers",
+        columns: [
+          { name: "pub_id", type: "pk" },
+          { name: "pub_name", type: "regular" },
+          { name: "city", type: "regular" },
+          { name: "state", type: "regular" },
+          { name: "country", type: "regular" }
+        ],
+        position: { row: 1, col: 3 }
+      },
+      {
+        name: "titles",
+        columns: [
+          { name: "title_id", type: "pk" },
+          { name: "title", type: "regular" },
+          { name: "type", type: "regular" },
+          { name: "pub_id", type: "fk" },
+          { name: "price", type: "regular" },
+          { name: "advance", type: "regular" },
+          { name: "royalty", type: "regular" },
+          { name: "ytd_sales", type: "regular" },
+          { name: "notes", type: "regular" },
+          { name: "pubdate", type: "regular" }
+        ],
+        position: { row: 2, col: 2 }
+      },
+      {
+        name: "titleauthor",
+        columns: [
+          { name: "au_id", type: "pk" },
+          { name: "title_id", type: "pk" },
+          { name: "au_ord", type: "regular" },
+          { name: "royaltyper", type: "regular" }
+        ],
+        position: { row: 3, col: 1 }
+      },
+      {
+        name: "employee",
+        columns: [
+          { name: "emp_id", type: "pk" },
+          { name: "fname", type: "regular" },
+          { name: "minit", type: "regular" },
+          { name: "lname", type: "regular" },
+          { name: "job_id", type: "fk" },
+          { name: "job_lvl", type: "regular" },
+          { name: "pub_id", type: "fk" },
+          { name: "hire_date", type: "regular" }
+        ],
+        position: { row: 3, col: 3 }
+      },
+      {
+        name: "jobs",
+        columns: [
+          { name: "job_id", type: "pk" },
+          { name: "job_desc", type: "regular" },
+          { name: "min_lvl", type: "regular" },
+          { name: "max_lvl", type: "regular" }
+        ],
+        position: { row: 4, col: 1 }
+      },
+      {
+        name: "pub_info",
+        columns: [
+          { name: "pub_id", type: "pk" },
+          { name: "logo", type: "regular" },
+          { name: "pr_info", type: "regular" }
+        ],
+        position: { row: 4, col: 3 }
+      },
+      {
+        name: "sales",
+        columns: [
+          { name: "stor_id", type: "fk" },
+          { name: "ord_num", type: "regular" },
+          { name: "ord_date", type: "regular" },
+          { name: "qty", type: "regular" },
+          { name: "payterms", type: "regular" },
+          { name: "title_id", type: "fk" }
+        ],
+        position: { row: 2, col: 4 }
+      },
+      {
+        name: "stores",
+        columns: [
+          { name: "stor_id", type: "pk" },
+          { name: "stor_name", type: "regular" },
+          { name: "stor_address", type: "regular" },
+          { name: "city", type: "regular" },
+          { name: "state", type: "regular" },
+          { name: "zip", type: "regular" }
+        ],
+        position: { row: 3, col: 4 }
+      },
+      {
+        name: "roysched",
+        columns: [
+          { name: "title_id", type: "fk" },
+          { name: "lorange", type: "regular" },
+          { name: "hirange", type: "regular" },
+          { name: "royalty", type: "regular" }
+        ],
+        position: { row: 4, col: 4 }
+      },
+      {
+        name: "discounts",
+        columns: [
+          { name: "discounttype", type: "regular" },
+          { name: "stor_id", type: "fk" },
+          { name: "lowqty", type: "regular" },
+          { name: "highqty", type: "regular" },
+          { name: "discount", type: "regular" }
+        ],
+        position: { row: 5, col: 4 }
+      }
+    ];
+
+    // Relaciones entre tablas
+    const relationships = [
+      { from: "authors", fromColumn: "au_id", to: "titleauthor", toColumn: "au_id", type: "one-to-many" },
+      { from: "titles", fromColumn: "title_id", to: "titleauthor", toColumn: "title_id", type: "one-to-many" },
+      { from: "publishers", fromColumn: "pub_id", to: "titles", toColumn: "pub_id", type: "one-to-many" },
+      { from: "publishers", fromColumn: "pub_id", to: "employee", toColumn: "pub_id", type: "one-to-many" },
+      { from: "publishers", fromColumn: "pub_id", to: "pub_info", toColumn: "pub_id", type: "one-to-one" },
+      { from: "jobs", fromColumn: "job_id", to: "employee", toColumn: "job_id", type: "one-to-many" },
+      { from: "titles", fromColumn: "title_id", to: "sales", toColumn: "title_id", type: "one-to-many" },
+      { from: "titles", fromColumn: "title_id", to: "roysched", toColumn: "title_id", type: "one-to-many" },
+      { from: "stores", fromColumn: "stor_id", to: "sales", toColumn: "stor_id", type: "one-to-many" },
+      { from: "stores", fromColumn: "stor_id", to: "discounts", toColumn: "stor_id", type: "one-to-many" }
+    ];
+
+    // Función para renderizar las tablas
+    function renderTables() {
+      const container = document.getElementById('tables-layout');
+      container.innerHTML = '';
+      
+      tables.forEach(table => {
+        const tableElement = document.createElement('div');
+        tableElement.className = 'table';
+        tableElement.id = `table-${table.name}`;
+        tableElement.dataset.tableName = table.name;
+        
+        let columnsHTML = '';
+        table.columns.forEach(column => {
+          const icon = column.type === 'pk' ? '🔑' : column.type === 'fk' ? '🔗' : '📄';
+          const columnClass = column.type === 'pk' ? 'pk' : column.type === 'fk' ? 'fk' : '';
+          
+          columnsHTML += `
+            <div class="column ${columnClass}" data-column-name="${column.name}">
+              <span class="column-icon">${icon}</span>
+              <span>${column.name}</span>
+            </div>
+          `;
+        });
+        
+        tableElement.innerHTML = `
+          <div class="table-header">
+            <span class="table-name">${table.name}</span>
+          </div>
+          <div class="table-content">
+            ${columnsHTML}
+          </div>
+        `;
+        
+        container.appendChild(tableElement);
+      });
+    }
+
+    // Función para dibujar las relaciones
+    function drawRelationships() {
+      const svg = document.getElementById('relationships-layer');
+      svg.innerHTML = '<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2196F3"/></marker></defs>';
+      
+      relationships.forEach(rel => {
+        const fromTable = document.getElementById(`table-${rel.from}`);
+        const toTable = document.getElementById(`table-${rel.to}`);
+        
+        if (!fromTable || !toTable) return;
+        
+        const fromRect = fromTable.getBoundingClientRect();
+        const toRect = toTable.getBoundingClientRect();
+        const containerRect = document.querySelector('.schema-container').getBoundingClientRect();
+        
+        // Calcular posición relativa al contenedor
+        const fromX = fromRect.left - containerRect.left + fromRect.width;
+        const fromY = fromRect.top - containerRect.top + getColumnYPosition(fromTable, rel.fromColumn);
+        const toX = toRect.left - containerRect.left;
+        const toY = toRect.top - containerRect.top + getColumnYPosition(toTable, rel.toColumn);
+        
+        // Crear línea
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', fromX);
+        line.setAttribute('y1', fromY);
+        line.setAttribute('x2', toX);
+        line.setAttribute('y2', toY);
+        line.setAttribute('class', rel.type === 'one-to-many' ? 'relationship-line' : 'relationship-line-dashed');
+        
+        svg.appendChild(line);
+      });
+    }
+
+    // Función para obtener la posición Y de una columna específica
+    function getColumnYPosition(tableElement, columnName) {
+      const columns = tableElement.querySelectorAll('.column');
+      for (let i = 0; i < columns.length; i++) {
+        if (columns[i].dataset.columnName === columnName) {
+          const columnRect = columns[i].getBoundingClientRect();
+          const tableRect = tableElement.getBoundingClientRect();
+          return columnRect.top - tableRect.top + columnRect.height / 2;
+        }
+      }
+      return tableElement.getBoundingClientRect().height / 2;
+    }
+
+    // Función para buscar tablas o columnas
+    function setupSearch() {
+      const searchInput = document.getElementById('search-input');
+      
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        tables.forEach(table => {
+          const tableElement = document.getElementById(`table-${table.name}`);
+          const tableName = table.name.toLowerCase();
+          const hasMatchingColumn = table.columns.some(column => 
+            column.name.toLowerCase().includes(searchTerm)
+          );
+          
+          if (searchTerm === '' || tableName.includes(searchTerm) || hasMatchingColumn) {
+            tableElement.style.display = 'block';
+            if (searchTerm !== '') {
+              tableElement.classList.add('table-highlight');
+            } else {
+              tableElement.classList.remove('table-highlight');
+            }
+          } else {
+            tableElement.style.display = 'none';
+            tableElement.classList.remove('table-highlight');
+          }
+        });
+      });
+    }
+
+    // Redibujar relaciones cuando cambie el tamaño de la ventana
+    window.addEventListener('resize', drawRelationships);
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTables();
+      // Esperar un momento para que las tablas se rendericen antes de dibujar las relaciones
+      setTimeout(drawRelationships, 100);
+      setupSearch();
+    });
+  </script>
+</body>
+</html>
