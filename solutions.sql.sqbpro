@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/dhana/Library/Mobile Documents/com~apple~CloudDocs/Ironhack/Lab work/day_21/sql_select/lab-sql-select/publications.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="602"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="authors" custom_title="0" dock_id="1" table="4,7:mainauthors"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000010100ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">--In this challenge you will write an SQL SELECT query that joins various tables to figure out what titles each author has published at which publishers. Your output should have at least the following columns:
+SELECT
+	authors.au_id AS &quot;AUTHOR ID&quot;,
+	authors.au_lname AS &quot;LAST NAME&quot;,
+	authors.au_fname AS &quot;FIRST NAME&quot;,
+	titles.title AS &quot;TITLE&quot;,
+	publishers.pub_name AS &quot;PUBLISHER&quot;
+FROM authors, titles, publishers, titleauthor
+WHERE
+	authors.au_id == titleauthor.au_id and
+	titleauthor.title_id == titles.title_id AND
+	titles.pub_id == publishers.pub_id;
+	
+--Elevating from your solution in Challenge 1, 
+--query how many titles each author has published at each publisher. Your output should look something like below:
+SELECT 
+    a.au_id AS &quot;AUTHOR ID&quot;,
+    a.au_lname AS &quot;LAST NAME&quot;,
+    a.au_fname AS &quot;FIRST NAME&quot;,
+    p.pub_name AS &quot;PUBLISHER&quot;,
+    COUNT(t.title_id) AS &quot;COUNT&quot;
+FROM authors a
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t ON ta.title_id = t.title_id
+JOIN publishers p ON t.pub_id = p.pub_id
+GROUP BY a.au_id, a.au_lname, a.au_fname, p.pub_name
+ORDER BY a.au_lname ASC, p.pub_name ASC;
+
+--Who are the top 3 authors who have sold the highest number of titles? Write a query to find out.
+--Requirements:
+--Your output should have the following columns:
+--AUTHOR ID - the ID of the author, LAST NAME - author last name, FIRST NAME - author first name
+--TOTAL - total number of titles sold from this author
+--Your output should be ordered based on TOTAL from high to low.
+--Only output the top 3 best selling authors.
+SELECT 
+    a.au_id AS &quot;AUTHOR ID&quot;,
+    a.au_lname AS &quot;LAST NAME&quot;,
+    a.au_fname AS &quot;FIRST NAME&quot;,
+    SUM(t.ytd_sales) AS &quot;TOTAL&quot;
+FROM authors a
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t ON ta.title_id = t.title_id
+GROUP BY a.au_id, a.au_lname, a.au_fname
+ORDER BY TOTAL DESC
+LIMIT 3;
+
+--Now modify your solution in Challenge 3 so that the output will display all 23 authors instead of the top 3. 
+--Note that the authors who have sold 0 titles should also appear in your output (ideally display 0 instead of NULL as the TOTAL). 
+--Also order your results based on TOTAL from high to low.
+SELECT 
+    a.au_id AS &quot;AUTHOR ID&quot;,
+    a.au_lname AS &quot;LAST NAME&quot;,
+    a.au_fname AS &quot;FIRST NAME&quot;,
+    COALESCE(SUM(t.ytd_sales), 0) AS &quot;TOTAL&quot;
+FROM authors a
+LEFT JOIN titleauthor ta ON a.au_id = ta.au_id
+LEFT JOIN titles t ON ta.title_id = t.title_id
+GROUP BY a.au_id, a.au_lname, a.au_fname
+ORDER BY TOTAL DESC;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
