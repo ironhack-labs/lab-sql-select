@@ -1,0 +1,54 @@
+-- Challenge 1 - Who Have Published What At Where?
+-- SELECT
+	-- authors.au_id AS "AUTHOR ID",
+	-- authors.au_lname AS "LAST NAME",
+	-- authors.au_fname AS "FIRST NAME",
+	-- titles.title AS "TITLE",
+	-- publishers.pub_name AS "PUBLISHER"
+-- FROM authors, titles, publishers, titleauthor
+-- WHERE
+	-- authors.au_id == titleauthor.au_id and
+	-- titleauthor.title_id == titles.title_id AND
+	-- titles.pub_id == publishers.pub_id;
+	
+--  Challenge 2 - Who Have Published How Many At Where?
+	-- SELECT
+	--- authors.au_id AS "AUTHOR ID",
+	-- authors.au_lname AS "LAST NAME",
+	-- authors.au_fname AS "FIRST NAME",
+	-- publishers.pub_name AS "PUBLISHER",
+	-- COUNT(titles. title_id)  AS "TITLE COUNT"
+-- FROM authors
+-- JOIN titleauthor ON authors.au_id = titleauthor.au_id
+-- JOIN titles ON titleauthor.title_id = titles.title_id
+-- JOIN publishers ON titles.pub_id = publishers.pub_id
+-- GROUP BY authors.au_id, authors.au_lname, authors.au_fname, publishers.pub_name
+-- ORDER BY authors.au_lname ASC, publishers.pub_name ASC;
+
+-- Challenge 3 - Best Selling Authors
+-- Who are the top 3 authors who have sold the highest number of titles? Write a query to find out.
+	-- SELECT
+	-- authors.au_id AS "AUTHOR ID",
+	-- authors.au_lname AS "LAST NAME",
+	-- authors.au_fname AS "FIRST NAME",
+	-- SUM(titles.ytd_sales) AS "TOTAL"
+-- FROM authors
+-- JOIN titleauthor ON authors.au_id = titleauthor.au_id
+-- JOIN titles ON titleauthor.title_id = titles.title_id
+-- GROUP BY authors.au_id, authors.au_lname, authors.au_fname
+-- ORDER BY TOTAL DESC
+-- LIMIT 3;
+
+-- Challenge 4 - Best Selling Authors Ranking
+-- Now modify your solution in Challenge 3 so that the output will display all 23 authors instead of the top 3. Note that the authors who have sold 0 titles should also appear in your output (ideally display 0 instead of NULL as the TOTAL). Also order your results based on TOTAL from high to low.
+	-- SELECT
+	-- authors.au_id AS "AUTHOR ID",
+	-- authors.au_lname AS "LAST NAME",
+	-- authors.au_fname AS "FIRST NAME",
+	-- COALESCE(SUM(titles.ytd_sales), 0) AS "TOTAL"
+-- FROM authors
+-- LEFT JOIN titleauthor ON authors.au_id = titleauthor.au_id
+-- LEFT JOIN titles ON titleauthor.title_id = titles.title_id
+-- GROUP BY authors.au_id, authors.au_lname, authors.au_fname
+-- ORDER BY TOTAL DESC;
+
