@@ -1,0 +1,39 @@
+-- Challenge 1 - Who Have Published What At Where?
+SELECT a.au_id as "AUTHOR ID", a.au_lname AS "LAST NAME", a.au_fname AS "FIRST NAME", t.title AS "TITLE", p.pub_name AS "PUBLISHER"
+FROM authors as a
+JOIN titleauthor as ta on a.au_id = ta.au_id
+JOIN titles as t on ta.title_id = t.title_id
+JOIN publishers as p on p.pub_id = t.pub_id;
+-- Challenge 2 - Who Have Published How Many At Where?
+SELECT a.au_id as "AUTHOR ID", a.au_lname AS "LAST NAME", a.au_fname AS "FIRST NAME", p.pub_name AS "PUBLISHER", COUNT(t.title) AS "TITLE COUNT"
+FROM authors as a
+JOIN titleauthor as ta on a.au_id = ta.au_id
+JOIN titles as t on ta.title_id = t.title_id
+JOIN publishers as p on p.pub_id = t.pub_id
+GROUP by a.au_id;
+-- Challenge 3 - Best Selling Authors
+SELECT a.au_id as "AUTHOR ID", a.au_lname AS "LAST NAME", a.au_fname AS "FIRST NAME", SUM(s.qty) as "TOTAL"
+FROM authors as a
+JOIN titleauthor as ta on a.au_id = ta.au_id
+JOIN sales as s on s.title_id = ta.title_id
+GROUP by a.au_id, a.au_lname, a.au_fname
+ORDER by SUM(s.qty) DESC
+LIMIT 3;
+-- Challenge 4 - Best Selling Authors Ranking
+SELECT 
+	a.au_id as "AUTHOR ID", 
+	a.au_lname AS "LAST NAME", 
+	a.au_fname AS "FIRST NAME", 
+	CASE
+		WHEN SUM(s.qty) is NULL THEN 0
+		ELSE SUM(s.qty)
+	END as "TOTAL"
+FROM authors as a
+left JOIN titleauthor as ta on a.au_id = ta.au_id
+LEFT JOIN sales as s on s.title_id = ta.title_id
+GROUP by a.au_id, a.au_lname, a.au_fname
+ORDER by 
+	CASE
+		WHEN SUM(s.qty) is NULL THEN 0
+		ELSE SUM(s.qty)
+	END DESC;
