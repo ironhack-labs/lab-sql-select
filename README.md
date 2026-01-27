@@ -27,7 +27,7 @@ In this challenge you will write an SQL `SELECT` query that joins various tables
 
 Your output will look something like below:
 
-![Challenge 1 output](./images/challenge-1.png)
+![Challenge 1 output][def]
 
 _Note: the screenshot above is not the complete output._
 
@@ -78,3 +78,6 @@ Now modify your solution in Challenge 3 so that the output will display all 23 a
 
 - [SQLite Reference: COUNT Function](https://www.sqlite.org/lang_aggfunc.html#count)
 - [SQLite Reference: SUM Function](https://www.sqlite.org/lang_aggfunc.html#sumunc)
+
+
+[def]: ./images/challenge-1.png
