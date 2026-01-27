@@ -26,11 +26,11 @@ ORDER BY authors.au_id DESC
 SELECT authors.au_id AS "AUTHOR ID",
 authors.au_lname AS "LAST NAME",
 authors.au_fname AS "FIRST NAME",
-sum (sales.qty) as "TOTAL"
+sum (titles.ytd_sales) as "TOTAL"
 FROM authors
 JOIN titleauthor ON titleauthor.au_id = authors.au_id
-JOIN sales ON sales.title_id=titleauthor.title_id
-GROUP BY authors.au_id
+JOIN titles  ON titles.title_id=titleauthor.title_id
+GROUP BY "AUTHOR ID"
 ORDER BY "TOTAL" DESC
 LIMIT 3
 
@@ -38,9 +38,12 @@ LIMIT 3
 SELECT authors.au_id AS "AUTHOR ID",
 authors.au_lname AS "LAST NAME",
 authors.au_fname AS "FIRST NAME",
-sum(coalesce (sales.qty,0)) as "TOTAL"
+CASE
+	WHEN sum(titles.ytd_sales) IS NULL THEN 0
+	ELSE sum(titles.ytd_sales)
+END AS "TOTAL"
 FROM authors
 LEFT JOIN titleauthor ON titleauthor.au_id = authors.au_id
-LEFT JOIN sales  ON titleauthor.title_id=sales.title_id
+LEFT JOIN titles  ON titles.title_id=titleauthor.title_id
 GROUP BY "AUTHOR ID"
 ORDER BY "TOTAL" DESC
