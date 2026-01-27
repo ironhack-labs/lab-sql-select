@@ -29,7 +29,7 @@ group by 1,2,3,4;
 /*Challenge 3 - Best Selling Authors
 Who are the top 3 authors who have sold the highest number of titles? Write a query to find out. */
 
-SELECT a.au_id as author_id, a.au_lname as author_lastname, a.au_fname as author_firstname, sum(s.qty) as sales
+SELECT a.au_id as author_id, a.au_lname as author_lastname, a.au_fname as author_firstname, sum(t.ytd_sales) as sales
 from authors a
 left join titleauthor jta on jta.au_id = a.au_id
 left join titles t on t.title_id = jta.title_id
@@ -44,11 +44,11 @@ Note that the authors who have sold 0 titles should also appear in your output (
 
 */
 
-SELECT a.au_id as author_id, a.au_lname as author_lastname, a.au_fname as author_firstname, case when s.qty is null then 0 else sum(s.qty) end as sales
+SELECT a.au_id as author_id, a.au_lname as author_lastname, a.au_fname as author_firstname, COALESCE(SUM(t.ytd_sales), 0) AS total
 from authors a
 left join titleauthor jta on jta.au_id = a.au_id
 left join titles t on t.title_id = jta.title_id
-left join sales s on t.title_id = s.title_id
+--left join sales s on t.title_id = s.title_id
 group by 1,2,3
 order by 4 desc;
 
