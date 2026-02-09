@@ -37,14 +37,13 @@ SELECT
 	authors.au_id as "Author ID",
 	authors.au_lname as "Last Name",
 	authors.au_fname as "First Name",
-	sum(titles.price * sales.qty) as "Total"
-FROM sales, titles, titleauthor, authors
-WHERE
-	sales.title_id == titles.title_id AND
+	sum(titles.ytd_sales) as "Total"
+FROM titles, titleauthor, authors
+WHERE	
 	titles.title_id == titleauthor.title_id AND
 	titleauthor.au_id == authors.au_id
 GROUP by authors.au_id
-ORDER by "Total Sales" DESC
+ORDER by "Total" DESC
 LIMIT 3
 ;
 
@@ -54,7 +53,7 @@ SELECT
 	authors.au_id as "Author ID",
 	authors.au_lname as "Last Name",
 	authors.au_fname as "First Name",
-	total(titles.price * sales.qty) as "Total Sales"
+	total(titles.price * sales.qty) as "Total"
 FROM authors
 LEFT JOIN titleauthor
 		ON authors.au_id = titleauthor.au_id
@@ -63,5 +62,6 @@ LEFT JOIN titles
 LEFT JOIN sales
 		ON titles.title_id = sales.title_id
 GROUP by authors.au_id
-ORDER by "Total Sales" DESC
+ORDER by "Total" DESC
 ;
+
