@@ -7,13 +7,13 @@ SELECT
 	publishers.pub_name AS PUBLISHER
 FROM
 	titleauthor
-LEFT JOIN 
+JOIN 
 	authors
 	ON AUTHOR_ID = authors.au_id
-LEFT JOIN
+JOIN
 	titles
 	ON titleauthor.title_id = titles.title_id
-LEFT JOIN
+JOIN
 	publishers
 	ON titles.pub_id = publishers.pub_id;
 
@@ -27,13 +27,13 @@ SELECT
 	COUNT(titles.title) AS TITLE_COUNT
 FROM
 	titleauthor
-LEFT JOIN 
+JOIN 
 	authors
 	ON AUTHOR_ID = authors.au_id
-LEFT JOIN
+JOIN
 	titles
 	ON titleauthor.title_id = titles.title_id
-LEFT JOIN
+JOIN
 	publishers
 	ON titles.pub_id = publishers.pub_id
 GROUP BY
@@ -53,7 +53,7 @@ FROM
 LEFT JOIN 
 	titleauthor
 	ON AUTHOR_ID = titleauthor.au_id
-LEFT JOIN
+JOIN
 	titles
 	ON titleauthor.title_id = titles.title_id
 GROUP BY
@@ -72,7 +72,7 @@ SELECT
 	COALESCE(SUM(titles.ytd_sales), 0) AS TOTAL_SOLD
 FROM
 	authors
-LEFT JOIN 
+JOIN 
 	titleauthor
 	ON AUTHOR_ID = titleauthor.au_id
 LEFT JOIN
