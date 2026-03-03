@@ -47,10 +47,10 @@ SELECT
 	authors.au_id AS AUTHOR_ID,
 	authors.au_lname AS LAST_NAME,
 	authors.au_fname AS FIRST_NAME,
-	SUM(titles.ytd_sales) AS TOTAL_SOLD
+	COALESCE(SUM(titles.ytd_sales), 0) AS `TOTAL`
 FROM
 	authors
-LEFT JOIN 
+JOIN 
 	titleauthor
 	ON AUTHOR_ID = titleauthor.au_id
 JOIN
@@ -59,9 +59,9 @@ JOIN
 GROUP BY
 	AUTHOR_ID
 ORDER BY
-	TOTAL_SOLD DESC
+	`TOTAL` DESC
 LIMIT
-	3;
+    3;
 
 
 -- CHALLENGE 4
@@ -69,10 +69,10 @@ SELECT
 	authors.au_id AS AUTHOR_ID,
 	authors.au_lname AS LAST_NAME,
 	authors.au_fname AS FIRST_NAME,
-	COALESCE(SUM(titles.ytd_sales), 0) AS TOTAL_SOLD
+	COALESCE(SUM(titles.ytd_sales), 0) AS `TOTAL`
 FROM
 	authors
-JOIN 
+LEFT JOIN 
 	titleauthor
 	ON AUTHOR_ID = titleauthor.au_id
 LEFT JOIN
@@ -81,4 +81,4 @@ LEFT JOIN
 GROUP BY
 	AUTHOR_ID
 ORDER BY
-	TOTAL_SOLD DESC;
+	`TOTAL` DESC;
