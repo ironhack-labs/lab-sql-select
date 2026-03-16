@@ -1,0 +1,7 @@
+SELECT authors.au_id, authors.au_lname, authors.au_fname, titles.title, publishers.pub_name FROM authors JOIN titleauthor ON authors.au_id = titleauthor.au_id JOIN titles ON titleauthor.title_id = titles.title_id JOIN publishers ON titles.pub_id = publishers.pub_id;
+
+SELECT authors.au_id, authors.au_lname, authors.au_fname, publishers.pub_name, COUNT(titles.title_id) FROM authors JOIN titleauthor ON authors.au_id = titleauthor.au_id JOIN titles ON titleauthor.title_id = titles.title_id JOIN publishers ON titles.pub_id = publishers.pub_id GROUP BY authors.au_id, authors.au_lname, authors.au_fname, publishers.pub_name;
+
+SELECT authors.au_id, authors.au_lname, authors.au_fname, SUM(sales.qty) AS total FROM authors JOIN titleauthor ON authors.au_id = titleauthor.au_id JOIN titles ON titleauthor.title_id = titles.title_id JOIN sales ON titles.title_id = sales.title_id GROUP BY authors.au_id, authors.au_lname, authors.au_fname ORDER BY total DESC LIMIT 3;
+
+SELECT authors.au_id, authors.au_lname, authors.au_fname, COALESCE(SUM(sales.qty),0) AS total FROM authors LEFT JOIN titleauthor ON authors.au_id = titleauthor.au_id LEFT JOIN titles ON titleauthor.title_id = titles.title_id LEFT JOIN sales ON titles.title_id = sales.title_id GROUP BY authors.au_id, authors.au_lname, authors.au_fname ORDER BY total DESC;
