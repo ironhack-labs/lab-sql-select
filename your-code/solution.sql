@@ -1,0 +1,52 @@
+-- Challenge 1
+SELECT
+  a.au_id,
+  a.au_lname,
+  a.au_fname,
+  t.title,
+  p.pub_name
+FROM authors a
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t ON ta.title_id = t.title_id
+JOIN publishers p ON t.pub_id = p.pub_id;
+
+
+-- Challenge 2
+SELECT
+  a.au_id,
+  a.au_lname,
+  a.au_fname,
+  p.pub_name,
+  COUNT(*) AS title_count
+FROM authors a
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t ON ta.title_id = t.title_id
+JOIN publishers p ON t.pub_id = p.pub_id
+GROUP BY a.au_id, a.au_lname, a.au_fname, p.pub_name;
+
+
+-- Challenge 3
+SELECT
+  a.au_id,
+  a.au_lname,
+  a.au_fname,
+  SUM(t.ytd_sales) AS total
+FROM authors a
+JOIN titleauthor ta ON a.au_id = ta.au_id
+JOIN titles t ON ta.title_id = t.title_id
+GROUP BY a.au_id, a.au_lname, a.au_fname
+ORDER BY total DESC
+LIMIT 3;
+
+
+-- Challenge 4
+SELECT
+  a.au_id,
+  a.au_lname,
+  a.au_fname,
+  COALESCE(SUM(t.ytd_sales), 0) AS total
+FROM authors a
+LEFT JOIN titleauthor ta ON a.au_id = ta.au_id
+LEFT JOIN titles t ON ta.title_id = t.title_id
+GROUP BY a.au_id, a.au_lname, a.au_fname
+ORDER BY total DESC;
