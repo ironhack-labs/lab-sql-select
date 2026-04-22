@@ -33,28 +33,30 @@ SELECT COUNT(*) FROM titleauthor; --Check if the sum of the TITLE COUNT matches 
 
 
 -- Challenge 3 - Best Selling Authors
--- Identifying the top 3 authors by total titles sold (count of titles)
+-- Ranked by total units sold (ytd_sales)
 SELECT 
     a.au_id AS "AUTHOR ID", 
     a.au_lname AS "LAST NAME", 
     a.au_fname AS "FIRST NAME", 
-    COUNT(ta.title_id) AS "TOTAL"
+    SUM(t.ytd_sales) AS "TOTAL"
 FROM authors a
 INNER JOIN titleauthor ta ON a.au_id = ta.au_id
+INNER JOIN titles t ON ta.title_id = t.title_id
 GROUP BY a.au_id
 ORDER BY "TOTAL" DESC
 LIMIT 3;
 
 
 -- CHALLENGE 4: BEST SELLING AUTHORS RANKING
--- Listing all authors and their total titles, including those with 0 sales.
+-- All 23 authors ranked by total units sold
 
 SELECT 
     a.au_id AS "AUTHOR ID", 
     a.au_lname AS "LAST NAME", 
     a.au_fname AS "FIRST NAME", 
-    IFNULL(COUNT(ta.title_id), 0) AS "TOTAL"
+    IFNULL(SUM(t.ytd_sales), 0) AS "TOTAL"
 FROM authors a
 LEFT JOIN titleauthor ta ON a.au_id = ta.au_id
+LEFT JOIN titles t ON ta.title_id = t.title_id
 GROUP BY a.au_id
 ORDER BY "TOTAL" DESC;
