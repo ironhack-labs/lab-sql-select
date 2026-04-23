@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="publications.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1059"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="titles" custom_title="0" dock_id="3" table="4,6:maintitles"/><dock_state state="000000ff00000000fd0000000100000002000005bb00000390fc0100000003fb000000160064006f0063006b00420072006f00770073006500310100000000000005bb0000000000000000fb000000160064006f0063006b00420072006f00770073006500320100000000000005bb0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000000005bb0000012300ffffff000002690000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="authors" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="95"/><column index="2" value="119"/><column index="3" value="95"/><column index="4" value="103"/><column index="5" value="167"/><column index="6" value="119"/><column index="7" value="38"/><column index="8" value="47"/><column index="9" value="56"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="discounts" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="143"/><column index="2" value="48"/><column index="3" value="46"/><column index="4" value="51"/><column index="5" value="56"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="employee" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="79"/><column index="2" value="79"/><column index="3" value="37"/><column index="4" value="79"/><column index="5" value="43"/><column index="6" value="46"/><column index="7" value="46"/><column index="8" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="stores" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="48"/><column index="2" value="295"/><column index="3" value="159"/><column index="4" value="79"/><column index="5" value="38"/><column index="6" value="47"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="titles" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="55"/><column index="2" value="300"/><column index="3" value="103"/><column index="4" value="46"/><column index="5" value="63"/><column index="6" value="87"/><column index="7" value="49"/><column index="8" value="63"/><column index="9" value="300"/><column index="10" value="159"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">SELECT title, rental_rate as cost, length
+FROM film;
+
+SELECT title, rental_rate/length as price_per_min FROM film
+order by price_per_min desc;
+
+select concat(title,', rating:', rating) as descriptor from film;
+
+SELECT * from film 
+where rental_duration BETWEEN 1 and 5;
+
+SELECT a.first_name,
+	   a.last_name,
+	   f.title
+FROM actor a
+INNER join film_actor fa on a.actor_id = fa.actor_id
+inner join film f on fa.film_id = f.film_id
+limit 100;
+
+SELECT first_name, last_name, count(*) films
+FROM actor a
+JOIN film_actor fa USING(actor_id) -- Using if the columns are identical
+group by actor_id, first_name, last_name
+order by films DESC
+limit 1;
+
+-- Challenge 1
+-- Inner Join title from film &amp; inventory_id from inventory
+
+SELECT f.title, i.inventory_id 
+from film f
+INNER JOIN inventory i on f.film_id = i.film_id;
+
+-- Left join: Keeps everything from the left table. Even if there's no match to the RIGHT
+SELECT f.title, count(r.rental_id) as rental_count
+FROM film f
+LEFT JOIN inventory i on f.film_id = i.film_id
+LEFT JOIN rental r on i.inventory_id = r.inventory_id
+GROUP by f.title
+ORDER by rental_count ASC;
+
+-- RIGHT join keeps everythin form the RIGHT TABLE
+SELECT a.address, c.first_name, c.last_name
+FROM customer c
+RIGHT JOIN address a on c.address_id = a.address_id
+WHERE c.customer_id is null;
+
+--SUBQUERIES
+SELECT first_name, last_name FROM actor
+INNER JOIN 
+		(SELECT DISTINCT actor_id FROM film_actor
+		INNER JOIN
+			(SELECT * FROM film
+			 WHERE length &gt; (
+				SELECT avg(length) 
+				as average FROM film)
+				) as selected_film_id
+			on film_actor.film_id = selected_film_id.film_id) as selected_actors
+on actor.actor_id = selected_actor.actor_id;
+</sql><sql name="solutions.sql" filename="C:/Ironhack/lab-sql-select/solutions.sql">-- Reference to file &quot;C:/Ironhack/lab-sql-select/solutions.sql&quot; (not supported by this version) --</sql><current_tab id="1"/></tab_sql></sqlb_project>
