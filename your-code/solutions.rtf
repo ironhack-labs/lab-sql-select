@@ -1,0 +1,79 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red43\green44\blue51;
+\red131\green84\blue3;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c100000\c100000\c99985\c0;\cssrgb\c22090\c22883\c25937;
+\cssrgb\c59036\c40070\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs22 \cf2 \cb3 \expnd0\expndtw0\kerning0
+-- Challenge \cb3 1\cb3 \kerning1\expnd0\expndtw0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf2 \cb3 \
+SELECT\
+	ta.au_id AS "AUTHOR ID",\
+	a.au_lname AS "LAST NAME",\
+	a.au_fname AS "FIRST NAME",\
+	t.title AS "TITLE",\
+	p.pub_name AS "PUBLISHER"\
+FROM titleauthor ta\
+JOIN authors  a ON ta.au_id = a.au_id\
+JOIN titles t ON t.title_id=ta.title_id\
+JOIN publishers p ON p.pub_id=t.pub_id\
+\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \expnd0\expndtw0\kerning0
+-- Challenge \cb3 2\cb3 \kerning1\expnd0\expndtw0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf2 \cb3 \
+SELECT\
+	ta.au_id AS "AUTHOR ID",\
+	a.au_lname AS "LAST NAME",\
+	a.au_fname AS "FIRST NAME",\
+	t.title AS "TITLE",\
+	p.pub_name AS "PUBLISHER",\
+	zz. "TITLE COUNT"\
+FROM titleauthor ta\
+JOIN authors  a ON ta.au_id = a.au_id\
+JOIN titles t ON t.title_id=ta.title_id\
+JOIN publishers p ON p.pub_id=t.pub_id\
+LEFT JOIN (SELECT ta.au_id, t.pub_id, COUNT(ta.title_id) AS "TITLE COUNT"\
+FROM  titleauthor ta\
+JOIN titles t ON ta.title_id=t.title_id\
+GROUP by ta.au_id, t.pub_id) zz ON zz.au_id = ta.au_id AND zz.pub_id = t.pub_id\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \expnd0\expndtw0\kerning0
+-- Challenge \cb3 3\
+\cb3 \kerning1\expnd0\expndtw0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf2 \cb3 SELECT\
+	ta.au_id AS "AUTHOR ID",\
+	a.au_lname AS "LAST NAME",\
+	a.au_fname AS "FIRST NAME",\
+	COUNT(ta.title_id) AS "TOTAL"\
+FROM authors a\
+LEFT JOIN titleauthor ta ON ta.au_id=a.au_id\
+GROUP BY a.au_id\
+ORDER BY "TOTAL" DESC\
+LIMIT 3\
+\
+\pard\pardeftab720\partightenfactor0
+\cf2 \cb3 \expnd0\expndtw0\kerning0
+-- Challenge \cb3 4\cb3 \kerning1\expnd0\expndtw0 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+\cf2 \cb3 SELECT\
+	ta.au_id AS "AUTHOR ID",\
+	a.au_lname AS "LAST NAME",\
+	a.au_fname AS "FIRST NAME",\
+	COUNT(ta.title_id) AS "TOTAL"\
+FROM authors a\
+LEFT JOIN titleauthor ta ON ta.au_id=a.au_id\
+GROUP BY a.au_id\
+ORDER BY "TOTAL" DESC\
+\
+\
+}
