@@ -42,18 +42,17 @@ SELECT
 	au.au_id AS "AUTHOR ID",
 	au.au_lname AS "LAST NAME",
 	au.au_fname AS "FIRST NAME",
-	COUNT(t.title_id) AS "TITLE COUNT"
+	SUM(t.ytd_sales) AS "TOTAL"
 	
 FROM
 	authors AS au
 	
 JOIN titleauthor AS ta ON au.au_id = ta.au_id
 JOIN titles AS t ON t.title_id = ta.title_id
-JOIN publishers AS pub ON pub.pub_id = t.pub_id
 
 GROUP BY au.au_id
 
-ORDER BY COUNT(t.title_id) DESC LIMIT 3
+ORDER BY CAST("TOTAL" AS SIGNED) DESC LIMIT 3
 */
 
 /* Challenge 4
@@ -61,16 +60,15 @@ SELECT
 	au.au_id AS "AUTHOR ID",
 	au.au_lname AS "LAST NAME",
 	au.au_fname AS "FIRST NAME",
-	COUNT(t.title_id) AS "TITLE COUNT"
+	SUM(COALESCE(t.ytd_sales, 0)) AS "TOTAL"
 	
 FROM
 	authors AS au
 	
 LEFT JOIN titleauthor AS ta ON au.au_id = ta.au_id
 LEFT JOIN titles AS t ON t.title_id = ta.title_id
-LEFT JOIN publishers AS pub ON pub.pub_id = t.pub_id
 
 GROUP BY au.au_id
 
-ORDER BY COUNT(t.title_id) DESC
+ORDER BY CAST("TOTAL" AS SIGNED) DESC
 */
