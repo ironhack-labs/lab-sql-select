@@ -43,7 +43,7 @@ SELECT
 	authors.au_id AS "AUTHOR ID",
 	authors.au_lname AS "LAST NAME",
 	authors.au_fname AS "FIRST NAME",
-	SUM(titles.ytd_sales) AS "TOTAL"	
+	COUNT(titleauthor.title_id) AS "TOTAL"
 FROM authors 
 JOIN titleauthor 
 	ON authors.au_id = titleauthor.au_id
@@ -63,7 +63,7 @@ SELECT
 	authors.au_id AS "AUTHOR ID",
 	authors.au_lname AS "LAST NAME",
 	authors.au_fname AS "FIRST NAME",
-	COALESCE(SUM(titles.ytd_sales), 0) AS "TOTAL"	
+	COALESCE(COUNT(titleauthor.title_id), 0) AS "TOTAL"	
 FROM authors 
 LEFT JOIN titleauthor 
 	ON authors.au_id = titleauthor.au_id
