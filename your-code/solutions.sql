@@ -23,8 +23,9 @@ LIMIT 3;--Q3
 
 SELECT a.au_id AS AUTHOR_ID, a.au_lname AS LAST_NAME, a.au_fname AS FIRST_NAME, sum(s.qty) AS TOTAL
 FROM authors AS a
-JOIN titleauthor AS ta ON a.au_id = ta.au_id
-JOIN titles AS t ON ta.title_id = t.title_id
-JOIN sales AS s ON t.title_id = s.title_id
+LEFT JOIN titleauthor AS ta ON a.au_id = ta.au_id
+LEFT JOIN titles AS t ON ta.title_id = t.title_id
+LEFT JOIN sales AS s ON t.title_id = s.title_id
 GROUP BY a.au_id	
-ORDER BY sum(s.qty)DESC;--Q4
+ORDER BY TOTAL DESC
+WHEN TOTAL IS NULL THEN "0";--Q4
