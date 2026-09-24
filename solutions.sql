@@ -31,19 +31,23 @@ GROUP BY authors.au_id, publishers.pub_id;
 SELECT authors.au_id as "AUTHOR ID", 
 		authors.au_lname as "LAST NAME",
 		authors.au_fname as "FIRST NAME",
-		count(titleauthor.title_id) as "TOTAL"
+		sum(sales.qty) as "TOTAL"
 FROM authors INNER JOIN titleauthor
 	on authors.au_id = titleauthor.au_id
+	 INNER JOIN sales
+	 on titleauthor.title_id = sales.title_id
 GROUP BY authors.au_id
-ORDER BY count(titleauthor.title_id) DESC
+ORDER BY sum(sales.qty) DESC
 LIMIT 3;
 
 /* Challeng 4 - Best selling authors ranking */
 SELECT authors.au_id as "AUTHOR ID", 
 		authors.au_lname as "LAST NAME",
 		authors.au_fname as "FIRST NAME",
-		count(titleauthor.title_id) as "TOTAL"
-FROM authors LEFT JOIN titleauthor
+		coalesce(sum(sales.qty), 0) as "TOTAL"
+FROM authors left JOIN titleauthor
 	on authors.au_id = titleauthor.au_id
+	 LEFT JOIN sales
+	 on titleauthor.title_id = sales.title_id
 GROUP BY authors.au_id
-ORDER BY count(titleauthor.title_id) DESC;
+ORDER BY "TOTAL" DESC;
