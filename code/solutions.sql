@@ -34,7 +34,7 @@ SELECT
     a.au_id AS "AUTHOR ID",
     a.au_lname AS "LAST NAME",
     a.au_fname AS "FIRST NAME",
-    SUM(s.qty) AS "TOTAL"
+    count(s.qty) AS "TOTAL"
 FROM authors AS a
 JOIN titleauthor AS ta ON ta.au_id = a.au_id
 JOIN sales AS s ON s.title_id = ta.title_id
@@ -48,7 +48,7 @@ SELECT
     a.au_id AS "AUTHOR ID",
     a.au_lname AS "LAST NAME",
     a.au_fname AS "FIRST NAME",
-    COALESCE(SUM(s.qty), 0) AS "TOTAL"
+    COALESCE(count(s.qty), 0) AS "TOTAL"
 FROM authors AS a
 LEFT JOIN titleauthor AS ta ON ta.au_id = a.au_id
 LEFT JOIN sales AS s ON s.title_id = ta.title_id
