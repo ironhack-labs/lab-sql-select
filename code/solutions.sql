@@ -1,14 +1,14 @@
  -- query 1 ---
 
-   SELECT a.au_id, 
-		  a.au_lname, 
-		  a.au_fname, 
-		  t.title,
-		  p.pub_name
+   SELECT a.au_id AS "AUTHOR ID",
+		  a.au_lname AS "LAST NAME",
+		  a.au_fname AS "FIRST NAME",
+		  t.title AS "TITLE",
+		  p.pub_name AS "PUBLISHER"
    FROM authors as a
    JOIN titleauthor as ta on a.au_id = ta.au_id
    JOIN titles as t on  ta.title_id = t.title_id
-   JOIN publishers as p on t.pub_id = p.pub_id
+   JOIN publishers as p on t.pub_id = p.pub_id;
 
  -- query 2 ---
 
@@ -25,16 +25,16 @@ group by a.au_id,
 		 a.au_lname,
 		 p.pub_id,
 		 p.pub_name
-order by a.au_id DESC
+order by a.au_id DESC;
 	
 
-   -- query 3 count of titles per autor --- 
+   -- query 3 best selling authors ---
    
 SELECT
     a.au_id AS "AUTHOR ID",
     a.au_lname AS "LAST NAME",
     a.au_fname AS "FIRST NAME",
-    count(s.qty) AS "TOTAL"
+    SUM(s.qty) AS "TOTAL"
 FROM authors AS a
 JOIN titleauthor AS ta ON ta.au_id = a.au_id
 JOIN sales AS s ON s.title_id = ta.title_id
@@ -42,17 +42,17 @@ GROUP BY a.au_id, a.au_lname, a.au_fname
 ORDER BY "TOTAL" DESC
 LIMIT 3;
 		  
-   -- query 4 count of titles per autor --- 
+   -- query 4 best selling authors ranking ---
 		  
 SELECT
     a.au_id AS "AUTHOR ID",
     a.au_lname AS "LAST NAME",
     a.au_fname AS "FIRST NAME",
-    COALESCE(SUM(t.ytd_sales), 0) AS "TOTAL"
+    COALESCE(SUM(s.qty), 0) AS "TOTAL"
 FROM authors AS a
 LEFT JOIN titleauthor AS ta
     ON ta.au_id = a.au_id
-LEFT JOIN titles AS t
-    ON t.title_id = ta.title_id
+LEFT JOIN sales AS s
+    ON s.title_id = ta.title_id
 GROUP BY a.au_id, a.au_lname, a.au_fname
-ORDER BY TOTAL DESC;
+ORDER BY COALESCE(SUM(s.qty), 0) DESC;
