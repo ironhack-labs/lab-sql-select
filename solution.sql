@@ -16,19 +16,19 @@ order by `AUTHOR ID` desc;
 
 ---- Challenge 3 - Best Selling Authors
 select a.au_id as `AUTHOR ID`, a.au_lname as `LAST NAME`, a.au_fname as  `FIRST NAME`, 
-	 count( ta.title_id) as `TOTAL`-- ,  sum(s.qty) as `SALES`
+	(count( s.title_id) * s.qty) as `TOTAL`-- ,  sum(s.qty) as `SALES`
 from authors as a 
 join titleauthor as ta on a.au_id=ta.au_id
 join sales as s on s.title_id=ta.title_id
 group by ta.au_id,   a.au_lname, a.au_fname
-order by sum(s.qty) desc
+order by `TOTAL`  desc
 limit 3;
 
 -- -- Challenge 4 - Best Selling Authors Ranking
 select a.au_id as `AUTHOR ID`, a.au_lname as `LAST NAME`, a.au_fname as  `FIRST NAME`, 
-	 count( ta.title_id) as `TOTAL`-- ,  sum(s.qty) as `SALES`
+	(count( s.title_id) * s.qty) as `TOTAL`-- ,  sum(s.qty) as `SALES`
 from authors as a 
 full outer join titleauthor as ta on a.au_id=ta.au_id
 full outer join sales as s on s.title_id=ta.title_id
 group by ta.au_id,   a.au_lname, a.au_fname
-order by sum(s.qty) desc;
+order by `TOTAL` desc;
