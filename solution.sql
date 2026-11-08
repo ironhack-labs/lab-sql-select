@@ -11,12 +11,12 @@ join publishers as p on p.pub_id=t.pub_id;
 ---- Challenge 2 - Who Have Published How Many At Where?
 select `AUTHOR ID`, `LAST NAME`, `FIRST NAME`, `PUBLISHER`, count(title) as `TITLE COUNT`
 from challenge1
-group by `AUTHOR ID` ;
+group by  `AUTHOR ID`, `LAST NAME`, `FIRST NAME` ;
 
 ---- Challenge 3 - Best Selling Authors
 select `AUTHOR ID`, `LAST NAME`, `FIRST NAME`, count(s.title_id) as `TOTAL`
 from challenge1
 join sales as s on `TITLE_ID`==s.title_id
-group by `TITLE`
+group by `AUTHOR ID`, `LAST NAME`, `FIRST NAME`
 order by `TOTAL` desc 
 limit 3;
